@@ -1,3 +1,5 @@
+// Extracted from https://github.com/rintoj/angular2-virtual-scroll/blob/master/src/virtual-scroll.ts
+
 // tslint:disable
 import {
     Component,
