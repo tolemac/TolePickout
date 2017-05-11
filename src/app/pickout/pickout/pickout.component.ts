@@ -46,24 +46,37 @@ import { ChangeEvent } from '../virtual-scroll';
             <ng-container *ngTemplateOutlet="filterTemplate; context: { '$implicit': filterObj, observable: filterSubject }"></ng-container>
           </div>
         </div>
-        <div #virtualScroll="virtualScroll" virtualScroll class="items-zone" #itemsPanel
-            [items]="items" (update)="viewPortItems=$event" (end)="onItemsScrollEnd($event)">
-          <div [tabindex]="0" class="item" [class.selected]="isSelected(item)"
-            *ngFor="let item of viewPortItems" (click)="itemClick(item)">
-            <ng-container *ngTemplateOutlet="itemTemplate; context: { '$implicit' : item }"></ng-container>
-          </div>          
-          <div [tabindex]="0" *ngIf="hasMore">Loading ...</div>
-          <div [tabindex]="0" *ngIf="!items.length">Mo items match ...</div>
-        </div>        
+        <ng-template [ngIf]="useVirtualScroll">
+          <div #virtualScroll="virtualScroll" virtualScroll class="items-zone"
+              [items]="items" (update)="viewPortItems=$event" (end)="onItemsScrollEnd($event)">
+
+            <ng-container *ngTemplateOutlet="internalItemTemplate; context: { $implicit: viewPortItems }"></ng-container>
+            <div [tabindex]="0" *ngIf="hasMore">Loading ...</div>
+            <div [tabindex]="0" *ngIf="!items.length">Mo items match ...</div>
+            <div [style.position]="'fixed'" class="element-when-no-result">&nbsp;</div>
+          </div>
+        </ng-template>
+        <ng-template [ngIf]="!useVirtualScroll">
+          <div class="items-zone" (scroll)="onItemsScroll($event)">
+            <ng-container *ngTemplateOutlet="internalItemTemplate; context: { $implicit: items }"></ng-container>
+          </div>
+        </ng-template>
       </div>
     </div>
+
+    <ng-template #internalItemTemplate let-innerItems>
+      <div [tabindex]="0" class="item" [class.selected]="isSelected(item)"
+        *ngFor="let item of innerItems" (click)="itemClick(item)">
+        <ng-container *ngTemplateOutlet="itemTemplate; context: { '$implicit' : item }"></ng-container>
+      </div>          
+    </ng-template>
   `
 })
 export class PickoutComponent implements OnInit {
   @ViewChild('content') contentElement: ElementRef;
-  // @ViewChild('itemsZone') itemsZoneElement: ElementRef;
-  @ViewChild('virtualScroll') virtualScroll: any;
+  @ViewChild('virtualScroll') virtualScrollCmp: any;
 
+  @Input() useVirtualScroll = true;
   @Input() allowClear = true;
 
   filterSubject = new Subject<any>();
@@ -159,7 +172,7 @@ export class PickoutComponent implements OnInit {
     this.getItems().then(() => {
       if (this.selected) {
         setTimeout(() => {
-          this.virtualScroll.scrollInto(this.selected);
+          this.virtualScrollCmp.scrollInto(this.selected);
         });
       }
     });
@@ -193,8 +206,10 @@ export class PickoutComponent implements OnInit {
   }
 
   nextPage() {
-    this.currentPage++;
-    this.getItems();
+    if (this.hasMore) {
+      this.currentPage++;
+      this.getItems();
+    }
   }
 
   onItemsScroll(ev: Event) {
