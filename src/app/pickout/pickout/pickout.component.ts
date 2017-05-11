@@ -167,16 +167,31 @@ export class PickoutComponent implements OnInit {
     });
   }
 
-  onOpen() {
-    this._element.style.height = this._element.offsetHeight + 'px';
-    this.getItems().then(() => {
-      if (this.selected) {
-        setTimeout(() => {
-          this.virtualScrollCmp.scrollInto(this.selected);
-        });
+  scrollToItem(item: any) {
+    setTimeout(() => {
+      if (this.useVirtualScroll) {
+        this.virtualScrollCmp.scrollInto(item);
+      } else {
+        const element = this._element.querySelector('.item.selected') as HTMLElement;
+        if (!element) { return; }
+        // element.focus();
+        const scrollBox = this._element.querySelector('.items-zone');
+        scrollBox.scrollTop = element.offsetTop - element.offsetHeight;
       }
     });
+  }
 
+  onOpen() {
+    this._element.style.height = this._element.offsetHeight + 'px';
+    if (!this.items.length) {
+      this.getItems().then(() => {
+        if (this.selected) {
+          this.scrollToItem(this.selected);
+        }
+      });
+    } else {
+      this.scrollToItem(this.selected);
+    }
   }
 
   onClose() {
