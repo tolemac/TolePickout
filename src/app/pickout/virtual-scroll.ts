@@ -9,7 +9,7 @@ import {
     OnDestroy,
     OnInit,
     Output,
-    Renderer,
+    Renderer2,
     SimpleChanges,
     ViewChild,
 } from '@angular/core';
@@ -89,7 +89,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy, OnChanges {
     previousEnd: number;
     startupLoop: boolean = true;
 
-    constructor(private element: ElementRef, private renderer: Renderer) { }
+    constructor(private element: ElementRef, private renderer: Renderer2) { }
 
     ngOnInit() {
         this.onScrollListener = this.renderer.listen(this.element.nativeElement, 'scroll', this.refresh.bind(this));

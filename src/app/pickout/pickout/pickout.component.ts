@@ -46,9 +46,10 @@ import { ChangeEvent } from '../virtual-scroll';
             <ng-container *ngTemplateOutlet="filterTemplate; context: { '$implicit': filterObj, observable: filterSubject }"></ng-container>
           </div>
         </div>
-        <div virtualScroll class="items-zone" #itemsPanel
+        <div #virtualScroll="virtualScroll" virtualScroll class="items-zone" #itemsPanel
             [items]="items" (update)="viewPortItems=$event" (end)="onItemsScrollEnd($event)">
-          <div [tabindex]="0" class="item" *ngFor="let item of viewPortItems" (click)="itemClick(item)">
+          <div [tabindex]="0" class="item" [class.selected]="isSelected(item)"
+            *ngFor="let item of viewPortItems" (click)="itemClick(item)">
             <ng-container *ngTemplateOutlet="itemTemplate; context: { '$implicit' : item }"></ng-container>
           </div>          
           <div [tabindex]="0" *ngIf="hasMore">Loading ...</div>
@@ -60,7 +61,8 @@ import { ChangeEvent } from '../virtual-scroll';
 })
 export class PickoutComponent implements OnInit {
   @ViewChild('content') contentElement: ElementRef;
-  @ViewChild('itemsZone') itemsZoneElement: ElementRef;
+  // @ViewChild('itemsZone') itemsZoneElement: ElementRef;
+  @ViewChild('virtualScroll') virtualScroll: any;
 
   @Input() allowClear = true;
 
@@ -138,7 +140,7 @@ export class PickoutComponent implements OnInit {
     if (this.currentPage === 0) {
       this.items = [];
     }
-    this.adapter.getItems(this.filterObj, this.currentPage, this.itemsPerpage).then(result => {
+    return this.adapter.getItems(this.filterObj, this.currentPage, this.itemsPerpage).then(result => {
       this.items = this.items.concat(...result.items);
       this.hasMore = result.hasMore;
       setTimeout(() => {
@@ -154,7 +156,14 @@ export class PickoutComponent implements OnInit {
 
   onOpen() {
     this._element.style.height = this._element.offsetHeight + 'px';
-    this.getItems();
+    this.getItems().then(() => {
+      if (this.selected) {
+        setTimeout(() => {
+          this.virtualScroll.scrollInto(this.selected);
+        });
+      }
+    });
+
   }
 
   onClose() {
@@ -207,6 +216,13 @@ export class PickoutComponent implements OnInit {
   private hasItemsZoneScroll() {
     const container = (this.contentElement.nativeElement as HTMLElement).querySelector('.items-zone'); // itemsZoneElement.nativeElement;
     return container.scrollHeight > (container.clientHeight + container.scrollTop);
+  }
+
+  isSelected(item: any) {
+    if (!this.selected) {
+      return false;
+    }
+    return item.object === this.selected.object;
   }
 
   /*

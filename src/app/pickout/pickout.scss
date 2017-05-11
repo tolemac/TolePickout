@@ -4,6 +4,7 @@
 // $border-color: rgba(0, 0, 0, .15);
 
 $item-hover-color: rgba(0, 0, 0, .15);
+$item-selected-color: lightBlue;
 
 ng-pickout {
   display: block;
@@ -42,7 +43,10 @@ ng-pickout {
         height: 8em; //100%;// 
         overflow-y: auto;
         .item {
-          cursor: pointer;
+          cursor: pointer;          
+        }
+        .selected {
+          background: $item-selected-color;
         }
         .item:hover {
           background-color: $item-hover-color;

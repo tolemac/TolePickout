@@ -7,13 +7,13 @@ import { data } from './data';
   <h1>
     {{title}}
   </h1>
-  <div>count {{pickout.items.length}}</div>
-  <ng-pickout #pickout [items]="items" valueProperty="_id" textProperty="name"></ng-pickout>
-  hola
   <div>
     {{pickout.selected?.object.name}}
     &nbsp;
   </div>
+  <div>count {{pickout.items.length}}</div>
+  <ng-pickout #pickout [items]="items" valueProperty="_id" textProperty="name"></ng-pickout>
+  hola
   <br/>
   <br/>
   <br/>
