@@ -1,6 +1,7 @@
 # TolePickout
 
-> Experimental project!
+> Experimental project! Not ready to use.
+> Proyecto experimental, no preparado para ser usado.
 
 Componente visual Angular (TypeScript) que permite seleccionar un elemento de una lista al estilo de [select2](https://select2.github.io/examples.html), [chossen](https://harvesthq.github.io/chosen), [selectize](http://selectize.github.io/selectize.js/) o [ng-select](https://basvandenberg.github.io/ng-select).
 
