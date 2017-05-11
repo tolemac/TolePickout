@@ -1,0 +1,4 @@
+interface MouseEvent {
+    openEvent: boolean;
+}
+

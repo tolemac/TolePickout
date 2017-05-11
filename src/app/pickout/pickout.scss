@@ -1,0 +1,82 @@
+// $border-size: 1px;
+// $y-padding: .5rem;
+// $x-padding: .75rem;
+// $border-color: rgba(0, 0, 0, .15);
+
+$item-hover-color: rgba(0, 0, 0, .15);
+
+ng-pickout {
+  display: block;
+  font-size: 1rem;
+  line-height: 1.25;
+
+  // .content.open {
+  //   position: fixed;
+  //   top: 0;
+  //   left: 0;
+  //   bottom: 0;
+  //   right: 0;
+  // }
+
+  .content {
+    position: relative;
+    color: #464a4c;
+    background-color: #fff;
+    border: 1px solid red;
+
+    .closed-zone {    
+      display: flex;
+      flex-flow: row nowrap;
+      .current-zone {
+        order: 1;
+        flex: 1;
+      }
+      .open-close-button {
+        order: 2;
+        flex: 0;
+        align-self: flex-start;
+      }
+    }
+    .dropdown-zone {
+      .items-zone {
+        height: 8em; //100%;// 
+        overflow-y: auto;
+        .item {
+          cursor: pointer;
+        }
+        .item:hover {
+          background-color: $item-hover-color;
+        }
+      }
+      .filter-zone {
+        display: flex;
+        flex-flow: row nowrap;    
+        .filter {
+          order: 1;
+          flex: 1;
+        }
+        .open-close-button {
+          order: 2;
+          flex: 0;
+          align-self: flex-start;
+        }
+      }
+    }
+
+
+  }
+}
+
+// ng-pickout:focus {
+//   color: #464a4c;
+//   background-color: #fff;
+//   border-color: #5cb3fd;
+//   outline: 0;
+//   /*height: 50px;    
+//     position: absolute;
+//     transition:             height 500ms ease;
+//         -moz-transition:    height 500ms ease;
+//         -ms-transition:     height 500ms ease;
+//         -o-transition:      height 500ms ease;
+//         -webkit-transition: height 500ms ease;*/
+// }

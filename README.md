@@ -1,28 +1,64 @@
 # TolePickout
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.0.0.
+> Experimental project!
 
-## Development server
+Componente visual Angular (TypeScript) que permite seleccionar un elemento de una lista al estilo de [select2](https://select2.github.io/examples.html), [chossen](https://harvesthq.github.io/chosen), [selectize](http://selectize.github.io/selectize.js/) o [ng-select](https://basvandenberg.github.io/ng-select).
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Requisitos generales del componente:
 
-## Code scaffolding
+* En principio debe tener la apariencia de un combobox.
+* Cuando coge el foco debe mostrar una lista de opciones a seleccionar y ser capaz de seleccionar uno o más elementos.
+* Debe aceptar un template para renderizar cada item de la lista.
+* Debe aceptar un template para renderizar el elemento seleccionado.
+* Debe aceptar un template para una zona de filtro.
+* Debe ser capaz de filtrar los elementos de la lista por medio de un objeto de filtro.
+* Debe cargar elementos gradualmente haciendo uso de paginación incremental, carga unos cuantos y cuando llegas al final de la lista vuelve a pedir más.
+* En dispositivos con pantallas pequeñas la lista de selección debe ocupar toda la pantalla.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive/pipe/service/class/module`.
+Para facilitar su uso:
+* Deberá contar con plantillas y opciones por defecto para que no sea complicado de usar en primera instancia.
+* Deberá ser capaz de funcionar con una simple lista de strings o una simple lista de objetos.
 
-## Build
+Requisitos técnicos del componente:
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+* Debe implementar ValueAccesor para poderlo usar con NgModel.
+* De la opción seleccionada debe extraer un valor, un identificador, que será el valor guardado en ngModel.
+* Debe usar virtual-scroll para poder albergar todos los elementos que queramos. Ver estas referencias:  
+https://medium.com/@rintoj/building-virtual-scroll-for-angular-2-7679ca95014e  
+http://rintoj.github.io/angular2-virtual-scroll  
+* Debe poder ser alimentado mediante un objeto adapter el cual debe cumplir con contrato como este:
 
-## Running unit tests
+````typescript
+interface PickOutAdapter<Item> {
+  getItemId(item: Item): any;
+  getItemText(item: Item): any;
+  getItems(filter: any) : Promise<AdapterResult<Item>>;
+  getItemByValue(value: any): Promise<Item>;
+}
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+type AdapterResult<Item> = {
+  items: Item[];
+  hasMore: boolean;
+}
+````
 
-## Running end-to-end tests
+Su uso debe ser algo parecido a esto:
+````html
+<ng-pick-out [(ngModel)]="obj.personId" [items]="listOfItems" valueProperty="Id" textProperty="Name"></ng-pick-out>
+<ng-pick-out [(ngModel)]="obj.personId" [adapter]="myPersonAdapter"></ng-pick-out>
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-Before running the tests make sure you are serving the app via `ng serve`.
 
-## Further help
+<ng-template #selectedTpl let-selected>{{selected.name}}</ng-template>
+<ng-template #itemTpl let-item><strong>{{item.name}}</strong> - {{item.surname}}</ng-template>
+<ng-template #selectedTpl let-filter>
+  <label>Name</label><input [(ngModel)]="filter.name"/>
+</ng-template>
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+<ng-pick-out [(ngModel)]="obj.personId" required
+  [adapter]="myPersonAdapter" 
+  [selectedTemplate]="selectedTpl"
+  [itemTemplate]="itemTpl"
+  [filterTemplate]="filterTpl"></ng-pick-out>
+
+````
+
