@@ -51,7 +51,10 @@ import { ChangeEvent } from '../virtual-scroll';
               [items]="items" (update)="viewPortItems=$event" (end)="onItemsScrollEnd($event)">
 
             <ng-container *ngTemplateOutlet="internalItemTemplate; context: { $implicit: viewPortItems }"></ng-container>
-            <div [tabindex]="0" *ngIf="hasMore">Loading ...</div>
+            <div [tabindex]="0" *ngIf="hasMore" (click)="loadingItemClick()">
+              <span *ngIf="loading">Loading ...</span>
+              <span *ngIf="!loading">Click here for more items ...</span>
+            </div>
             <div [tabindex]="0" *ngIf="!items.length">Mo items match ...</div>
             <div [style.position]="'fixed'" class="element-when-no-result">&nbsp;</div>
           </div>
@@ -76,13 +79,13 @@ export class PickoutComponent implements OnInit {
   @ViewChild('content') contentElement: ElementRef;
   @ViewChild('virtualScroll') virtualScrollCmp: any;
 
-  @Input() useVirtualScroll = true;
+  @Input() useVirtualScroll = false;
   @Input() allowClear = true;
 
   filterSubject = new Subject<any>();
 
   private _element: HTMLElement;
-  _isOpen = false;
+  private _isOpen = false;
   get isOpen() {
     return this._isOpen;
   }
@@ -104,6 +107,7 @@ export class PickoutComponent implements OnInit {
   filterObj = { searchPattern: '' };
   items: any[] = [];
   placeHolder = 'Pick out one ...';
+  loading: boolean;
 
   selected: any;
 
@@ -153,7 +157,9 @@ export class PickoutComponent implements OnInit {
     if (this.currentPage === 0) {
       this.items = [];
     }
+    this.loading = true;
     return this.adapter.getItems(this.filterObj, this.currentPage, this.itemsPerpage).then(result => {
+      this.loading = false;
       this.items = this.items.concat(...result.items);
       this.hasMore = result.hasMore;
       setTimeout(() => {
@@ -162,9 +168,16 @@ export class PickoutComponent implements OnInit {
         }
       }, 20);
     }).catch((err) => {
+      this.loading = false;
       this.items = [{ id: undefined, text: 'Error' }];
       throw err;
     });
+  }
+
+  loadingItemClick() {
+    if (!this.loading) {
+      this.getItems();
+    }
   }
 
   scrollToItem(item: any) {

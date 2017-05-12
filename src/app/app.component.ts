@@ -11,7 +11,7 @@ import { data } from './data';
     {{pickout.selected?.object.name}}
     &nbsp;
   </div>
-  <div>count {{pickout.items.length}}</div>
+  <div>count {{pickout.items.length}} page: {{pickout.currentPage}}</div>
   <ng-pickout #pickout [items]="items" valueProperty="_id" textProperty="name"></ng-pickout>
   hola
   <br/>

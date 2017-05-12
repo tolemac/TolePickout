@@ -126,7 +126,8 @@ export class VirtualScrollComponent implements OnInit, OnDestroy, OnChanges {
         let d = this.calculateDimensions();
         this.element.nativeElement.scrollTop = Math.floor(index / d.itemsPerRow) *
             d.childHeight - Math.max(0, (d.itemsPerCol - 1)) * d.childHeight;
-        this.refresh();
+        setTimeout(() =>
+            this.refresh(), 0);
     }
 
     private countItemsPerRow() {
